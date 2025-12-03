@@ -84,13 +84,25 @@ export function CreateProjectModal({
   const { addProject, technologies, users, currentUser } = useProjectStore();
 
   const [step, setStep] = useState(1);
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<{
+    name: string;
+    description: string;
+    type: ProjectType | null;
+    priority: Priority;
+    selectedTechnologies: Technology[];
+    selectedTeam: string[];
+    startDate: string;
+    endDate: string;
+    client: string;
+    repository: string;
+    figmaLink: string;
+  }>({
     name: "",
     description: "",
-    type: "" as ProjectType,
-    priority: "medium" as Priority,
-    selectedTechnologies: [] as Technology[],
-    selectedTeam: [] as string[],
+    type: null,
+    priority: "medium",
+    selectedTechnologies: [],
+    selectedTeam: [],
     startDate: new Date().toISOString().split("T")[0],
     endDate: "",
     client: "",
@@ -149,7 +161,7 @@ export function CreateProjectModal({
     addProject({
       name: formData.name,
       description: formData.description,
-      type: formData.type,
+      type: formData.type!,
       status: "planning",
       priority: formData.priority,
       technologies: formData.selectedTechnologies,
@@ -165,7 +177,7 @@ export function CreateProjectModal({
     setFormData({
       name: "",
       description: "",
-      type: "" as ProjectType,
+      type: null,
       priority: "medium",
       selectedTechnologies: [],
       selectedTeam: [],
@@ -182,7 +194,7 @@ export function CreateProjectModal({
   const canProceed = () => {
     switch (step) {
       case 1:
-        return formData.type !== "";
+        return formData.type !== null;
       case 2:
         return (
           formData.name.trim() !== "" && formData.description.trim() !== ""
