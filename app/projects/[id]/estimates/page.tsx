@@ -35,6 +35,7 @@ import {
   ChevronRight,
   Check,
   X,
+  ExternalLink,
 } from "lucide-react";
 import { format } from "date-fns";
 import { it } from "date-fns/locale";
@@ -270,10 +271,18 @@ export default function EstimatesPage() {
                   {project.name} - Pianificazione effort
                 </p>
               </div>
-              <Button onClick={() => setShowNewEstimationModal(true)}>
-                <Plus className="w-4 h-4" />
-                Nuova Stima
-              </Button>
+              <div className="flex items-center gap-2">
+                <Link href="/estimates">
+                  <Button variant="secondary">
+                    <ExternalLink className="w-4 h-4" />
+                    Stime Management
+                  </Button>
+                </Link>
+                <Button onClick={() => setShowNewEstimationModal(true)}>
+                  <Plus className="w-4 h-4" />
+                  Nuova Stima
+                </Button>
+              </div>
             </div>
           </div>
 

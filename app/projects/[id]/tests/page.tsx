@@ -40,6 +40,7 @@ import {
   X,
   ChevronDown,
   Minus,
+  ExternalLink,
 } from "lucide-react";
 import { format } from "date-fns";
 import { it } from "date-fns/locale";
@@ -440,10 +441,18 @@ export default function TestsPage() {
                     <option value="deprecated">Deprecato</option>
                   </select>
                 </div>
-                <Button onClick={() => setShowNewCaseModal(true)}>
-                  <Plus className="w-4 h-4" />
-                  Nuovo Test Case
-                </Button>
+                <div className="flex items-center gap-2">
+                  <Link href="/tests">
+                    <Button variant="secondary">
+                      <ExternalLink className="w-4 h-4" />
+                      Test Management
+                    </Button>
+                  </Link>
+                  <Button onClick={() => setShowNewCaseModal(true)}>
+                    <Plus className="w-4 h-4" />
+                    Nuovo Test Case
+                  </Button>
+                </div>
               </div>
 
               {/* Test Cases List */}
@@ -524,10 +533,18 @@ export default function TestsPage() {
             <>
               <div className="flex items-center justify-between mb-4">
                 <h3 className="font-medium text-gray-700">Cicli di Test</h3>
-                <Button onClick={() => setShowNewCycleModal(true)}>
-                  <Plus className="w-4 h-4" />
-                  Nuovo Ciclo
-                </Button>
+                <div className="flex items-center gap-2">
+                  <Link href="/tests">
+                    <Button variant="secondary">
+                      <ExternalLink className="w-4 h-4" />
+                      Test Management
+                    </Button>
+                  </Link>
+                  <Button onClick={() => setShowNewCycleModal(true)}>
+                    <Plus className="w-4 h-4" />
+                    Nuovo Ciclo
+                  </Button>
+                </div>
               </div>
 
               {project.testCycles.length === 0 ? (

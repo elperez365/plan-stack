@@ -33,6 +33,7 @@ import {
   BarChart3,
   TrendingUp,
   Target,
+  ExternalLink,
 } from "lucide-react";
 import { format } from "date-fns";
 import { it } from "date-fns/locale";
@@ -266,10 +267,18 @@ export default function DefectsPage() {
                   {project.name} - Gestione anomalie
                 </p>
               </div>
-              <Button onClick={() => setShowNewDefectModal(true)}>
-                <Plus className="w-4 h-4" />
-                Segnala Bug
-              </Button>
+              <div className="flex items-center gap-2">
+                <Link href="/defects">
+                  <Button variant="secondary">
+                    <ExternalLink className="w-4 h-4" />
+                    Defects Management
+                  </Button>
+                </Link>
+                <Button onClick={() => setShowNewDefectModal(true)}>
+                  <Plus className="w-4 h-4" />
+                  Segnala Bug
+                </Button>
+              </div>
             </div>
           </div>
 

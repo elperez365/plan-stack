@@ -594,7 +594,9 @@ export default function SettingsPage() {
         )
       ) {
         resetToDemo();
-        alert("Dati demo ripristinati con successo! Ricarica la pagina per vedere le modifiche.");
+        alert(
+          "Dati demo ripristinati con successo! Ricarica la pagina per vedere le modifiche."
+        );
         window.location.reload();
       }
     };
@@ -614,8 +616,8 @@ export default function SettingsPage() {
               </h4>
               <p className="text-sm text-gray-500 mb-4">
                 Ripristina i dati demo per mostrare le funzionalità
-                dell&apos;applicazione. Verranno caricati 6 progetti esempio
-                con task, messaggi, requisiti, stime, test e defect.
+                dell&apos;applicazione. Verranno caricati 6 progetti esempio con
+                task, messaggi, requisiti, stime, test e defect.
               </p>
               <Button onClick={handleResetToDemo} variant="secondary">
                 <RefreshCw className="w-4 h-4 mr-2" />

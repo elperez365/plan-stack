@@ -35,6 +35,7 @@ import {
   Download,
   ChevronRight,
   X,
+  ExternalLink,
 } from "lucide-react";
 import { format } from "date-fns";
 import { it } from "date-fns/locale";
@@ -256,10 +257,18 @@ export default function RequirementsPage() {
                   {project.name} - Documentazione requisiti
                 </p>
               </div>
-              <Button onClick={() => setShowNewAnalysisModal(true)}>
-                <Plus className="w-4 h-4" />
-                Nuova Analisi
-              </Button>
+              <div className="flex items-center gap-2">
+                <Link href="/requirements">
+                  <Button variant="secondary">
+                    <ExternalLink className="w-4 h-4" />
+                    Requisiti Management
+                  </Button>
+                </Link>
+                <Button onClick={() => setShowNewAnalysisModal(true)}>
+                  <Plus className="w-4 h-4" />
+                  Nuova Analisi
+                </Button>
+              </div>
             </div>
           </div>
 
