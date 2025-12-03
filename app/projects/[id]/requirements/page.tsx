@@ -258,12 +258,12 @@ export default function RequirementsPage() {
                 </p>
               </div>
               <div className="flex items-center gap-2">
-                <Link href="/requirements">
+                {/* <Link href="/requirements">
                   <Button variant="secondary">
                     <ExternalLink className="w-4 h-4" />
                     Requisiti Management
                   </Button>
-                </Link>
+                </Link> */}
                 <Button onClick={() => setShowNewAnalysisModal(true)}>
                   <Plus className="w-4 h-4" />
                   Nuova Analisi

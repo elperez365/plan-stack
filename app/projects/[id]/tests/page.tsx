@@ -442,12 +442,12 @@ export default function TestsPage() {
                   </select>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Link href="/tests">
+                  {/* <Link href="/tests">
                     <Button variant="secondary">
                       <ExternalLink className="w-4 h-4" />
                       Test Management
                     </Button>
-                  </Link>
+                  </Link> */}
                   <Button onClick={() => setShowNewCaseModal(true)}>
                     <Plus className="w-4 h-4" />
                     Nuovo Test Case
@@ -534,12 +534,12 @@ export default function TestsPage() {
               <div className="flex items-center justify-between mb-4">
                 <h3 className="font-medium text-gray-700">Cicli di Test</h3>
                 <div className="flex items-center gap-2">
-                  <Link href="/tests">
+                  {/* <Link href="/tests">
                     <Button variant="secondary">
                       <ExternalLink className="w-4 h-4" />
                       Test Management
                     </Button>
-                  </Link>
+                  </Link> */}
                   <Button onClick={() => setShowNewCycleModal(true)}>
                     <Plus className="w-4 h-4" />
                     Nuovo Ciclo

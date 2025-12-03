@@ -140,7 +140,7 @@ export default function ProjectDetailPage() {
     },
     {
       id: "defects",
-      title: "Defects",
+      title: "Bug & Difetti",
       description: "Bug tracking e gestione difetti",
       icon: <Bug className="w-8 h-8" />,
       bgColor: "bg-red-50",

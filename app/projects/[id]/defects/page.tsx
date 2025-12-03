@@ -268,12 +268,12 @@ export default function DefectsPage() {
                 </p>
               </div>
               <div className="flex items-center gap-2">
-                <Link href="/defects">
+                {/* <Link href="/defects">
                   <Button variant="secondary">
                     <ExternalLink className="w-4 h-4" />
                     Defects Management
                   </Button>
-                </Link>
+                </Link> */}
                 <Button onClick={() => setShowNewDefectModal(true)}>
                   <Plus className="w-4 h-4" />
                   Segnala Bug

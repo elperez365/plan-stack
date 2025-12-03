@@ -272,12 +272,12 @@ export default function EstimatesPage() {
                 </p>
               </div>
               <div className="flex items-center gap-2">
-                <Link href="/estimates">
+                {/* <Link href="/estimates">
                   <Button variant="secondary">
                     <ExternalLink className="w-4 h-4" />
                     Stime Management
                   </Button>
-                </Link>
+                </Link> */}
                 <Button onClick={() => setShowNewEstimationModal(true)}>
                   <Plus className="w-4 h-4" />
                   Nuova Stima
