@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Sidebar, Header } from "../components/layout/Navigation";
+import { AppLayout } from "../components/layout/AppLayout";
 import { useProjectStore } from "../store/projectStore";
 import { Card, CardHeader, CardContent } from "../components/ui/Card";
 import { Button } from "../components/ui/Button";
@@ -16,7 +16,6 @@ import {
   Mail,
   Phone,
   MapPin,
-  Calendar,
   Briefcase,
   Clock,
   MoreVertical,
@@ -87,170 +86,161 @@ export default function TeamPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Sidebar />
-      <div className="ml-64">
-        <Header />
-        <main className="p-6">
-          {/* Header */}
-          <div className="mb-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <h1 className="text-2xl font-bold text-gray-900">Team</h1>
-                <p className="text-gray-500 mt-1">
-                  Gestisci il team e visualizza le risorse
-                </p>
-              </div>
-              <Button>
-                <Plus className="w-4 h-4" />
-                Aggiungi Membro
-              </Button>
-            </div>
+    <AppLayout>
+      {/* Header */}
+      <div className="mb-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">Team</h1>
+            <p className="text-gray-500 mt-1">
+              Gestisci il team e visualizza le risorse
+            </p>
           </div>
-
-          {/* Stats */}
-          <div className="grid grid-cols-4 gap-4 mb-6">
-            <Card>
-              <CardContent className="py-4 text-center">
-                <UsersIcon className="w-8 h-8 mx-auto mb-2 text-violet-500" />
-                <p className="text-2xl font-bold text-gray-900">
-                  {stats.totalMembers}
-                </p>
-                <p className="text-sm text-gray-500">Membri Totali</p>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardContent className="py-4 text-center">
-                <Building2 className="w-8 h-8 mx-auto mb-2 text-blue-500" />
-                <p className="text-2xl font-bold text-gray-900">
-                  {stats.departments}
-                </p>
-                <p className="text-sm text-gray-500">Dipartimenti</p>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardContent className="py-4 text-center">
-                <Briefcase className="w-8 h-8 mx-auto mb-2 text-green-500" />
-                <p className="text-2xl font-bold text-gray-900">
-                  {stats.activeProjects}
-                </p>
-                <p className="text-sm text-gray-500">Progetti Attivi</p>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardContent className="py-4 text-center">
-                <TrendingUp className="w-8 h-8 mx-auto mb-2 text-amber-500" />
-                <p className="text-2xl font-bold text-gray-900">
-                  {stats.avgTeamSize}
-                </p>
-                <p className="text-sm text-gray-500">Media Team</p>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Filters */}
-          <div className="flex items-center gap-3 mb-6">
-            <div className="relative flex-1 max-w-md">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-              <input
-                type="text"
-                placeholder="Cerca membri..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-9 pr-4 py-2 rounded-lg border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500"
-              />
-            </div>
-            <select
-              value={filterRole}
-              onChange={(e) => setFilterRole(e.target.value)}
-              className="px-3 py-2 rounded-lg border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500"
-            >
-              <option value="all">Tutti i ruoli</option>
-              {Object.entries(roleLabels).map(([value, label]) => (
-                <option key={value} value={value}>
-                  {label}
-                </option>
-              ))}
-            </select>
-            <select
-              value={filterDepartment}
-              onChange={(e) => setFilterDepartment(e.target.value)}
-              className="px-3 py-2 rounded-lg border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500"
-            >
-              <option value="all">Tutti i dipartimenti</option>
-              {departments.map((dept) => (
-                <option key={dept} value={dept}>
-                  {dept}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {/* Team Grid */}
-          <div className="grid grid-cols-3 gap-4">
-            {filteredUsers.map((user) => {
-              const userProjects = getUserProjects(user.id);
-              return (
-                <Card
-                  key={user.id}
-                  hover
-                  className="cursor-pointer"
-                  onClick={() => setSelectedUser(user)}
-                >
-                  <CardContent className="p-6">
-                    <div className="flex items-start gap-4">
-                      <Avatar name={user.name} size="lg" />
-                      <div className="flex-1 min-w-0">
-                        <h3 className="font-semibold text-gray-900">
-                          {user.name}
-                        </h3>
-                        <p className="text-sm text-gray-500">{user.email}</p>
-                        <div className="flex items-center gap-2 mt-2">
-                          <RoleBadge role={user.role} />
-                          {user.department && (
-                            <span
-                              className={`text-xs px-2 py-1 rounded-full ${
-                                departmentColors[user.department] ||
-                                "bg-gray-100 text-gray-600"
-                              }`}
-                            >
-                              {user.department}
-                            </span>
-                          )}
-                        </div>
-                      </div>
-                      <button className="p-1 hover:bg-gray-100 rounded">
-                        <MoreVertical className="w-4 h-4 text-gray-400" />
-                      </button>
-                    </div>
-                    <div className="mt-4 pt-4 border-t border-gray-100">
-                      <div className="flex items-center justify-between text-sm">
-                        <span className="text-gray-500">Progetti attivi</span>
-                        <span className="font-medium text-gray-900">
-                          {
-                            userProjects.filter(
-                              (p) => p.status === "in-progress"
-                            ).length
-                          }
-                        </span>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              );
-            })}
-          </div>
-
-          {filteredUsers.length === 0 && (
-            <Card>
-              <CardContent className="py-12 text-center">
-                <UsersIcon className="w-12 h-12 mx-auto mb-4 text-gray-300" />
-                <p className="text-gray-500">Nessun membro trovato</p>
-              </CardContent>
-            </Card>
-          )}
-        </main>
+          <Button>
+            <Plus className="w-4 h-4" />
+            Aggiungi Membro
+          </Button>
+        </div>
       </div>
+
+      {/* Stats */}
+      <div className="grid grid-cols-4 gap-4 mb-6">
+        <Card>
+          <CardContent className="py-4 text-center">
+            <UsersIcon className="w-8 h-8 mx-auto mb-2 text-violet-500" />
+            <p className="text-2xl font-bold text-gray-900">
+              {stats.totalMembers}
+            </p>
+            <p className="text-sm text-gray-500">Membri Totali</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="py-4 text-center">
+            <Building2 className="w-8 h-8 mx-auto mb-2 text-blue-500" />
+            <p className="text-2xl font-bold text-gray-900">
+              {stats.departments}
+            </p>
+            <p className="text-sm text-gray-500">Dipartimenti</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="py-4 text-center">
+            <Briefcase className="w-8 h-8 mx-auto mb-2 text-green-500" />
+            <p className="text-2xl font-bold text-gray-900">
+              {stats.activeProjects}
+            </p>
+            <p className="text-sm text-gray-500">Progetti Attivi</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="py-4 text-center">
+            <TrendingUp className="w-8 h-8 mx-auto mb-2 text-amber-500" />
+            <p className="text-2xl font-bold text-gray-900">
+              {stats.avgTeamSize}
+            </p>
+            <p className="text-sm text-gray-500">Media Team</p>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Filters */}
+      <div className="flex items-center gap-3 mb-6">
+        <div className="relative flex-1 max-w-md">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+          <input
+            type="text"
+            placeholder="Cerca membri..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full pl-9 pr-4 py-2 rounded-lg border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500"
+          />
+        </div>
+        <select
+          value={filterRole}
+          onChange={(e) => setFilterRole(e.target.value)}
+          className="px-3 py-2 rounded-lg border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500"
+        >
+          <option value="all">Tutti i ruoli</option>
+          {Object.entries(roleLabels).map(([value, label]) => (
+            <option key={value} value={value}>
+              {label}
+            </option>
+          ))}
+        </select>
+        <select
+          value={filterDepartment}
+          onChange={(e) => setFilterDepartment(e.target.value)}
+          className="px-3 py-2 rounded-lg border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500"
+        >
+          <option value="all">Tutti i dipartimenti</option>
+          {departments.map((dept) => (
+            <option key={dept} value={dept}>
+              {dept}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      {/* Team Grid */}
+      <div className="grid grid-cols-3 gap-4">
+        {filteredUsers.map((user) => {
+          const userProjects = getUserProjects(user.id);
+          return (
+            <Card
+              key={user.id}
+              hover
+              className="cursor-pointer"
+              onClick={() => setSelectedUser(user)}
+            >
+              <CardContent className="p-6">
+                <div className="flex items-start gap-4">
+                  <Avatar name={user.name} size="lg" />
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-semibold text-gray-900">{user.name}</h3>
+                    <p className="text-sm text-gray-500">{user.email}</p>
+                    <div className="flex items-center gap-2 mt-2">
+                      <RoleBadge role={user.role} />
+                      {user.department && (
+                        <span
+                          className={`text-xs px-2 py-1 rounded-full ${
+                            departmentColors[user.department] ||
+                            "bg-gray-100 text-gray-600"
+                          }`}
+                        >
+                          {user.department}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                  <button className="p-1 hover:bg-gray-100 rounded">
+                    <MoreVertical className="w-4 h-4 text-gray-400" />
+                  </button>
+                </div>
+                <div className="mt-4 pt-4 border-t border-gray-100">
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-gray-500">Progetti attivi</span>
+                    <span className="font-medium text-gray-900">
+                      {
+                        userProjects.filter((p) => p.status === "in-progress")
+                          .length
+                      }
+                    </span>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          );
+        })}
+      </div>
+
+      {filteredUsers.length === 0 && (
+        <Card>
+          <CardContent className="py-12 text-center">
+            <UsersIcon className="w-12 h-12 mx-auto mb-4 text-gray-300" />
+            <p className="text-gray-500">Nessun membro trovato</p>
+          </CardContent>
+        </Card>
+      )}
 
       {/* User Detail Modal */}
       <Modal
@@ -369,6 +359,6 @@ export default function TeamPage() {
           </div>
         )}
       </Modal>
-    </div>
+    </AppLayout>
   );
 }

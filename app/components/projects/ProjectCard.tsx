@@ -7,8 +7,6 @@ import { Card } from "../ui/Card";
 import { StatusBadge, PriorityBadge } from "../ui/Badge";
 import { AvatarGroup } from "../ui/Avatar";
 import {
-  Calendar,
-  MessageSquare,
   CheckSquare,
   Globe,
   Smartphone,
@@ -17,6 +15,7 @@ import {
   Layers,
   MoreHorizontal,
   ArrowRight,
+  Clock,
 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { it } from "date-fns/locale";
@@ -119,11 +118,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
                 </span>
               </div>
               <div className="flex items-center gap-1">
-                <MessageSquare className="w-4 h-4" />
-                <span>{project.messages.length}</span>
-              </div>
-              <div className="flex items-center gap-1">
-                <Calendar className="w-4 h-4" />
+                <Clock className="w-4 h-4" />
                 <span className="text-xs">
                   {formatDistanceToNow(new Date(project.createdAt), {
                     addSuffix: true,

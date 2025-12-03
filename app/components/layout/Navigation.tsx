@@ -1,63 +1,99 @@
 "use client";
 
-import React from "react";
+import React, { createContext, useContext, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   LayoutDashboard,
   FolderKanban,
   Users,
-  MessageSquare,
-  Calendar,
   Settings,
   Bell,
   Search,
   ChevronDown,
   Sparkles,
+  Menu,
+  X,
 } from "lucide-react";
 import { useProjectStore } from "../../store/projectStore";
 import { Avatar } from "../ui/Avatar";
 import { RoleBadge } from "../ui/Badge";
 
+// Context per gestire lo stato della sidebar
+const SidebarContext = createContext<{
+  isOpen: boolean;
+  setIsOpen: (value: boolean) => void;
+}>({
+  isOpen: true,
+  setIsOpen: () => {},
+});
+
+export function useSidebar() {
+  return useContext(SidebarContext);
+}
+
+export function SidebarProvider({ children }: { children: React.ReactNode }) {
+  const [isOpen, setIsOpen] = useState(true);
+  return (
+    <SidebarContext.Provider value={{ isOpen, setIsOpen }}>
+      {children}
+    </SidebarContext.Provider>
+  );
+}
+
 const navigation = [
   { name: "Dashboard", href: "/", icon: LayoutDashboard },
   { name: "Progetti", href: "/projects", icon: FolderKanban },
   { name: "Team", href: "/team", icon: Users },
-  { name: "Messaggi", href: "/messages", icon: MessageSquare },
-  { name: "Calendario", href: "/calendar", icon: Calendar },
 ];
 
 export function Sidebar() {
   const pathname = usePathname();
   const { currentUser, users, setCurrentUser } = useProjectStore();
   const [showUserMenu, setShowUserMenu] = React.useState(false);
+  const { isOpen, setIsOpen } = useSidebar();
 
   return (
-    <aside className="fixed left-0 top-0 bottom-0 w-64 bg-white border-r border-gray-100 flex flex-col z-40">
-      {/* Logo */}
-      <div className="px-6 py-5 border-b border-gray-100">
-        <Link href="/" className="flex items-center gap-2">
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-violet-600 to-indigo-600 flex items-center justify-center">
-            <Sparkles className="w-5 h-5 text-white" />
-          </div>
-          <span className="text-xl font-bold bg-gradient-to-r from-violet-600 to-indigo-600 text-transparent bg-clip-text">
-            PlanStack
-          </span>
-        </Link>
-      </div>
+    <>
+      {/* Overlay per mobile/chiusura */}
+      {isOpen && (
+        <div
+          className="fixed inset-0 bg-black/20 z-30 lg:hidden"
+          onClick={() => setIsOpen(false)}
+        />
+      )}
 
-      {/* Navigation */}
-      <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
-        {navigation.map((item) => {
-          const isActive =
-            pathname === item.href ||
-            (item.href !== "/" && pathname.startsWith(item.href));
+      <aside
+        className={`
+        fixed left-0 top-0 bottom-0 w-64 bg-white border-r border-gray-100 flex flex-col z-40
+        transition-transform duration-300 ease-in-out
+        ${isOpen ? "translate-x-0" : "-translate-x-full"}
+      `}
+      >
+        {/* Logo */}
+        <div className="px-6 py-5 border-b border-gray-100">
+          <Link href="/" className="flex items-center gap-2">
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-violet-600 to-indigo-600 flex items-center justify-center">
+              <Sparkles className="w-5 h-5 text-white" />
+            </div>
+            <span className="text-xl font-bold bg-gradient-to-r from-violet-600 to-indigo-600 text-transparent bg-clip-text">
+              PlanStack
+            </span>
+          </Link>
+        </div>
 
-          return (
-            <Link
-              key={item.name}
-              href={item.href}
-              className={`
+        {/* Navigation */}
+        <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
+          {navigation.map((item) => {
+            const isActive =
+              pathname === item.href ||
+              (item.href !== "/" && pathname.startsWith(item.href));
+
+            return (
+              <Link
+                key={item.name}
+                href={item.href}
+                className={`
                 flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium
                 transition-all duration-200
                 ${
@@ -66,54 +102,54 @@ export function Sidebar() {
                     : "text-gray-600 hover:bg-gray-100"
                 }
               `}
+              >
+                <item.icon className="w-5 h-5" />
+                {item.name}
+              </Link>
+            );
+          })}
+        </nav>
+
+        {/* User Menu */}
+        <div className="px-3 py-4 border-t border-gray-100">
+          <div className="relative">
+            <button
+              onClick={() => setShowUserMenu(!showUserMenu)}
+              className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-gray-100 transition-colors"
             >
-              <item.icon className="w-5 h-5" />
-              {item.name}
-            </Link>
-          );
-        })}
-      </nav>
-
-      {/* User Menu */}
-      <div className="px-3 py-4 border-t border-gray-100">
-        <div className="relative">
-          <button
-            onClick={() => setShowUserMenu(!showUserMenu)}
-            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-gray-100 transition-colors"
-          >
-            {currentUser && <Avatar name={currentUser.name} size="sm" />}
-            <div className="flex-1 text-left">
-              <p className="text-sm font-medium text-gray-900 truncate">
-                {currentUser?.name}
-              </p>
-              <p className="text-xs text-gray-500 truncate">
-                {currentUser?.email}
-              </p>
-            </div>
-            <ChevronDown
-              className={`w-4 h-4 text-gray-400 transition-transform ${
-                showUserMenu ? "rotate-180" : ""
-              }`}
-            />
-          </button>
-
-          {/* User Dropdown */}
-          {showUserMenu && (
-            <div className="absolute bottom-full left-0 right-0 mb-2 bg-white rounded-xl border border-gray-100 shadow-lg overflow-hidden">
-              <div className="p-2 border-b border-gray-100">
-                <p className="px-2 py-1 text-xs font-medium text-gray-400 uppercase">
-                  Cambia utente
+              {currentUser && <Avatar name={currentUser.name} size="sm" />}
+              <div className="flex-1 text-left">
+                <p className="text-sm font-medium text-gray-900 truncate">
+                  {currentUser?.name}
+                </p>
+                <p className="text-xs text-gray-500 truncate">
+                  {currentUser?.email}
                 </p>
               </div>
-              <div className="p-2 max-h-64 overflow-y-auto">
-                {users.map((user) => (
-                  <button
-                    key={user.id}
-                    onClick={() => {
-                      setCurrentUser(user);
-                      setShowUserMenu(false);
-                    }}
-                    className={`
+              <ChevronDown
+                className={`w-4 h-4 text-gray-400 transition-transform ${
+                  showUserMenu ? "rotate-180" : ""
+                }`}
+              />
+            </button>
+
+            {/* User Dropdown */}
+            {showUserMenu && (
+              <div className="absolute bottom-full left-0 right-0 mb-2 bg-white rounded-xl border border-gray-100 shadow-lg overflow-hidden">
+                <div className="p-2 border-b border-gray-100">
+                  <p className="px-2 py-1 text-xs font-medium text-gray-400 uppercase">
+                    Cambia utente
+                  </p>
+                </div>
+                <div className="p-2 max-h-64 overflow-y-auto">
+                  {users.map((user) => (
+                    <button
+                      key={user.id}
+                      onClick={() => {
+                        setCurrentUser(user);
+                        setShowUserMenu(false);
+                      }}
+                      className={`
                       w-full flex items-center gap-3 px-2 py-2 rounded-lg text-left
                       transition-colors
                       ${
@@ -122,37 +158,48 @@ export function Sidebar() {
                           : "hover:bg-gray-50"
                       }
                     `}
-                  >
-                    <Avatar name={user.name} size="sm" />
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-gray-900 truncate">
-                        {user.name}
-                      </p>
-                      <div className="flex items-center gap-2">
-                        <RoleBadge role={user.role} />
+                    >
+                      <Avatar name={user.name} size="sm" />
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-gray-900 truncate">
+                          {user.name}
+                        </p>
+                        <div className="flex items-center gap-2">
+                          <RoleBadge role={user.role} />
+                        </div>
                       </div>
-                    </div>
-                  </button>
-                ))}
+                    </button>
+                  ))}
+                </div>
               </div>
-            </div>
-          )}
+            )}
+          </div>
         </div>
-      </div>
-    </aside>
+      </aside>
+    </>
   );
 }
 
 export function Header() {
   const { currentUser, projects, activities } = useProjectStore();
   const [showNotifications, setShowNotifications] = React.useState(false);
+  const { isOpen, setIsOpen } = useSidebar();
 
   const recentActivities = activities.slice(0, 5);
 
   return (
     <header className="h-16 bg-white border-b border-gray-100 flex items-center justify-between px-6">
+      {/* Hamburger Menu */}
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-xl transition-colors mr-4"
+        aria-label={isOpen ? "Chiudi menu" : "Apri menu"}
+      >
+        {isOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+      </button>
+
       {/* Search */}
-      <div className="relative w-96">
+      <div className="relative w-96 flex-1 max-w-md">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
         <input
           type="text"

@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
-import { Sidebar, Header } from "../../../components/layout/Navigation";
+import { AppLayout } from "../../../components/layout/AppLayout";
 import { useProjectStore } from "../../../store/projectStore";
 import { Card, CardHeader, CardContent } from "../../../components/ui/Card";
 import { Button } from "../../../components/ui/Button";
@@ -315,359 +315,349 @@ export default function TestsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Sidebar />
-      <div className="ml-64">
-        <Header />
-        <main className="p-6">
-          {/* Breadcrumb */}
-          <div className="mb-6">
-            <Link
-              href={`/projects/${projectId}`}
-              className="inline-flex items-center gap-2 text-gray-500 hover:text-gray-700 mb-4"
+    <AppLayout>
+      {/* Breadcrumb */}
+      <div className="mb-6">
+        <Link
+          href={`/projects/${projectId}`}
+          className="inline-flex items-center gap-2 text-gray-500 hover:text-gray-700 mb-4"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          Torna al progetto
+        </Link>
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">
+              Test Management
+            </h1>
+            <p className="text-gray-500 mt-1">{project.name} - Gestione test</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Stats */}
+      <div className="grid grid-cols-4 gap-4 mb-6">
+        <Card>
+          <CardContent className="py-4 text-center">
+            <FlaskConical className="w-8 h-8 mx-auto mb-2 text-violet-500" />
+            <p className="text-2xl font-bold text-gray-900">
+              {stats.totalCases}
+            </p>
+            <p className="text-sm text-gray-500">Test Cases</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="py-4 text-center">
+            <CheckCircle className="w-8 h-8 mx-auto mb-2 text-green-500" />
+            <p className="text-2xl font-bold text-gray-900">
+              {stats.activeCases}
+            </p>
+            <p className="text-sm text-gray-500">Attivi</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="py-4 text-center">
+            <Zap className="w-8 h-8 mx-auto mb-2 text-amber-500" />
+            <p className="text-2xl font-bold text-gray-900">
+              {stats.totalCycles}
+            </p>
+            <p className="text-sm text-gray-500">Cicli di Test</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="py-4 text-center">
+            <BarChart3 className="w-8 h-8 mx-auto mb-2 text-blue-500" />
+            <p className="text-2xl font-bold text-gray-900">
+              {stats.passRate}%
+            </p>
+            <p className="text-sm text-gray-500">Pass Rate</p>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Tabs */}
+      <div className="border-b border-gray-200 mb-6">
+        <nav className="flex gap-8">
+          {[
+            {
+              key: "cases",
+              label: "Test Cases",
+              count: project.testCases.length,
+            },
+            {
+              key: "cycles",
+              label: "Cicli di Test",
+              count: project.testCycles.length,
+            },
+          ].map((tab) => (
+            <button
+              key={tab.key}
+              onClick={() => setActiveTab(tab.key as typeof activeTab)}
+              className={`pb-4 px-1 border-b-2 font-medium text-sm transition-colors ${
+                activeTab === tab.key
+                  ? "border-violet-600 text-violet-600"
+                  : "border-transparent text-gray-500 hover:text-gray-700"
+              }`}
             >
-              <ArrowLeft className="w-4 h-4" />
-              Torna al progetto
-            </Link>
-            <div className="flex items-center justify-between">
-              <div>
-                <h1 className="text-2xl font-bold text-gray-900">
-                  Test Management
-                </h1>
-                <p className="text-gray-500 mt-1">
-                  {project.name} - Gestione test
-                </p>
+              {tab.label}
+              <Badge variant="default" size="sm" className="ml-2">
+                {tab.count}
+              </Badge>
+            </button>
+          ))}
+        </nav>
+      </div>
+
+      {/* Test Cases Tab */}
+      {activeTab === "cases" && (
+        <>
+          {/* Filters & Actions */}
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-3">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                <input
+                  type="text"
+                  placeholder="Cerca test cases..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-9 pr-4 py-2 rounded-lg border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500"
+                />
               </div>
+              <select
+                value={filterStatus}
+                onChange={(e) => setFilterStatus(e.target.value)}
+                className="px-3 py-2 rounded-lg border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500"
+              >
+                <option value="all">Tutti gli stati</option>
+                <option value="active">Attivo</option>
+                <option value="draft">Bozza</option>
+                <option value="deprecated">Deprecato</option>
+              </select>
+            </div>
+            <div className="flex items-center gap-2">
+              {/* <Link href="/tests">
+                    <Button variant="secondary">
+                      <ExternalLink className="w-4 h-4" />
+                      Test Management
+                    </Button>
+                  </Link> */}
+              <Button onClick={() => setShowNewCaseModal(true)}>
+                <Plus className="w-4 h-4" />
+                Nuovo Test Case
+              </Button>
             </div>
           </div>
 
-          {/* Stats */}
-          <div className="grid grid-cols-4 gap-4 mb-6">
-            <Card>
-              <CardContent className="py-4 text-center">
-                <FlaskConical className="w-8 h-8 mx-auto mb-2 text-violet-500" />
-                <p className="text-2xl font-bold text-gray-900">
-                  {stats.totalCases}
-                </p>
-                <p className="text-sm text-gray-500">Test Cases</p>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardContent className="py-4 text-center">
-                <CheckCircle className="w-8 h-8 mx-auto mb-2 text-green-500" />
-                <p className="text-2xl font-bold text-gray-900">
-                  {stats.activeCases}
-                </p>
-                <p className="text-sm text-gray-500">Attivi</p>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardContent className="py-4 text-center">
-                <Zap className="w-8 h-8 mx-auto mb-2 text-amber-500" />
-                <p className="text-2xl font-bold text-gray-900">
-                  {stats.totalCycles}
-                </p>
-                <p className="text-sm text-gray-500">Cicli di Test</p>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardContent className="py-4 text-center">
-                <BarChart3 className="w-8 h-8 mx-auto mb-2 text-blue-500" />
-                <p className="text-2xl font-bold text-gray-900">
-                  {stats.passRate}%
-                </p>
-                <p className="text-sm text-gray-500">Pass Rate</p>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Tabs */}
-          <div className="border-b border-gray-200 mb-6">
-            <nav className="flex gap-8">
-              {[
-                {
-                  key: "cases",
-                  label: "Test Cases",
-                  count: project.testCases.length,
-                },
-                {
-                  key: "cycles",
-                  label: "Cicli di Test",
-                  count: project.testCycles.length,
-                },
-              ].map((tab) => (
-                <button
-                  key={tab.key}
-                  onClick={() => setActiveTab(tab.key as typeof activeTab)}
-                  className={`pb-4 px-1 border-b-2 font-medium text-sm transition-colors ${
-                    activeTab === tab.key
-                      ? "border-violet-600 text-violet-600"
-                      : "border-transparent text-gray-500 hover:text-gray-700"
-                  }`}
+          {/* Test Cases List */}
+          {filteredCases.length === 0 ? (
+            <EmptyState
+              icon={FlaskConical}
+              title="Nessun test case"
+              description="Crea il primo test case per iniziare a testare il progetto."
+              action={{
+                label: "Crea Test Case",
+                onClick: () => setShowNewCaseModal(true),
+              }}
+            />
+          ) : (
+            <div className="space-y-3">
+              {filteredCases.map((tc) => (
+                <Card
+                  key={tc.id}
+                  hover
+                  className="cursor-pointer"
+                  onClick={() => setSelectedTestCase(tc)}
                 >
-                  {tab.label}
-                  <Badge variant="default" size="sm" className="ml-2">
-                    {tab.count}
-                  </Badge>
-                </button>
+                  <CardContent className="py-4">
+                    <div className="flex items-start gap-4">
+                      <div className="flex-shrink-0 mt-1">
+                        <FlaskConical
+                          className={`w-5 h-5 ${
+                            tc.type === "automated"
+                              ? "text-blue-500"
+                              : "text-violet-500"
+                          }`}
+                        />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className="font-mono text-sm text-violet-600">
+                            {tc.code}
+                          </span>
+                          <h4 className="font-medium text-gray-900">
+                            {tc.title}
+                          </h4>
+                        </div>
+                        <p className="text-sm text-gray-500 line-clamp-1 mb-2">
+                          {tc.description}
+                        </p>
+                        <div className="flex items-center gap-2">
+                          <Badge
+                            variant={getPriorityColor(tc.priority)}
+                            size="sm"
+                          >
+                            {getPriorityLabel(tc.priority)}
+                          </Badge>
+                          <Badge size="sm">
+                            {tc.type === "automated" ? "Automatico" : "Manuale"}
+                          </Badge>
+                          <span className="text-xs text-gray-400">
+                            {tc.steps.length} step
+                          </span>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Avatar name={tc.author.name} size="sm" />
+                        <ChevronRight className="w-4 h-4 text-gray-300" />
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
               ))}
-            </nav>
-          </div>
+            </div>
+          )}
+        </>
+      )}
 
-          {/* Test Cases Tab */}
-          {activeTab === "cases" && (
-            <>
-              {/* Filters & Actions */}
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-3">
-                  <div className="relative">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                    <input
-                      type="text"
-                      placeholder="Cerca test cases..."
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      className="pl-9 pr-4 py-2 rounded-lg border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500"
-                    />
-                  </div>
-                  <select
-                    value={filterStatus}
-                    onChange={(e) => setFilterStatus(e.target.value)}
-                    className="px-3 py-2 rounded-lg border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500"
-                  >
-                    <option value="all">Tutti gli stati</option>
-                    <option value="active">Attivo</option>
-                    <option value="draft">Bozza</option>
-                    <option value="deprecated">Deprecato</option>
-                  </select>
-                </div>
-                <div className="flex items-center gap-2">
-                  {/* <Link href="/tests">
+      {/* Test Cycles Tab */}
+      {activeTab === "cycles" && (
+        <>
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="font-medium text-gray-700">Cicli di Test</h3>
+            <div className="flex items-center gap-2">
+              {/* <Link href="/tests">
                     <Button variant="secondary">
                       <ExternalLink className="w-4 h-4" />
                       Test Management
                     </Button>
                   </Link> */}
-                  <Button onClick={() => setShowNewCaseModal(true)}>
-                    <Plus className="w-4 h-4" />
-                    Nuovo Test Case
-                  </Button>
-                </div>
-              </div>
+              <Button onClick={() => setShowNewCycleModal(true)}>
+                <Plus className="w-4 h-4" />
+                Nuovo Ciclo
+              </Button>
+            </div>
+          </div>
 
-              {/* Test Cases List */}
-              {filteredCases.length === 0 ? (
-                <EmptyState
-                  icon={FlaskConical}
-                  title="Nessun test case"
-                  description="Crea il primo test case per iniziare a testare il progetto."
-                  action={{
-                    label: "Crea Test Case",
-                    onClick: () => setShowNewCaseModal(true),
-                  }}
-                />
-              ) : (
-                <div className="space-y-3">
-                  {filteredCases.map((tc) => (
-                    <Card
-                      key={tc.id}
-                      hover
-                      className="cursor-pointer"
-                      onClick={() => setSelectedTestCase(tc)}
-                    >
-                      <CardContent className="py-4">
-                        <div className="flex items-start gap-4">
-                          <div className="flex-shrink-0 mt-1">
-                            <FlaskConical
-                              className={`w-5 h-5 ${
-                                tc.type === "automated"
-                                  ? "text-blue-500"
-                                  : "text-violet-500"
-                              }`}
-                            />
+          {project.testCycles.length === 0 ? (
+            <EmptyState
+              icon={Zap}
+              title="Nessun ciclo di test"
+              description="Crea un ciclo di test per eseguire i test cases."
+              action={{
+                label: "Crea Ciclo",
+                onClick: () => setShowNewCycleModal(true),
+              }}
+            />
+          ) : (
+            <div className="space-y-4">
+              {project.testCycles.map((cycle) => {
+                const passed = cycle.executions.filter(
+                  (e) => e.result === "passed"
+                ).length;
+                const failed = cycle.executions.filter(
+                  (e) => e.result === "failed"
+                ).length;
+                const pending =
+                  cycle.testCases.length - cycle.executions.length;
+                const passRate =
+                  cycle.executions.length > 0
+                    ? Math.round((passed / cycle.executions.length) * 100)
+                    : 0;
+
+                return (
+                  <Card key={cycle.id}>
+                    <CardContent className="py-4">
+                      <div className="flex items-start justify-between mb-4">
+                        <div>
+                          <div className="flex items-center gap-3 mb-2">
+                            <h3 className="font-bold text-gray-900">
+                              {cycle.name}
+                            </h3>
+                            <Badge
+                              variant={
+                                cycle.status === "completed"
+                                  ? "success"
+                                  : cycle.status === "in-progress"
+                                  ? "warning"
+                                  : "default"
+                              }
+                            >
+                              {cycle.status === "completed"
+                                ? "Completato"
+                                : cycle.status === "in-progress"
+                                ? "In Corso"
+                                : "Pianificato"}
+                            </Badge>
                           </div>
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-2 mb-1">
-                              <span className="font-mono text-sm text-violet-600">
-                                {tc.code}
-                              </span>
-                              <h4 className="font-medium text-gray-900">
-                                {tc.title}
-                              </h4>
-                            </div>
-                            <p className="text-sm text-gray-500 line-clamp-1 mb-2">
-                              {tc.description}
-                            </p>
-                            <div className="flex items-center gap-2">
-                              <Badge
-                                variant={getPriorityColor(tc.priority)}
-                                size="sm"
-                              >
-                                {getPriorityLabel(tc.priority)}
-                              </Badge>
-                              <Badge size="sm">
-                                {tc.type === "automated"
-                                  ? "Automatico"
-                                  : "Manuale"}
-                              </Badge>
-                              <span className="text-xs text-gray-400">
-                                {tc.steps.length} step
-                              </span>
-                            </div>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <Avatar name={tc.author.name} size="sm" />
-                            <ChevronRight className="w-4 h-4 text-gray-300" />
+                          <p className="text-sm text-gray-500">
+                            {cycle.description}
+                          </p>
+                          <div className="flex items-center gap-4 mt-2 text-xs text-gray-400">
+                            <span>Ambiente: {cycle.environment}</span>
+                            <span>Build: {cycle.build}</span>
                           </div>
                         </div>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
-              )}
-            </>
+                        <Button
+                          variant="secondary"
+                          onClick={() => setSelectedCycle(cycle)}
+                        >
+                          <Play className="w-4 h-4" />
+                          Esegui Test
+                        </Button>
+                      </div>
+
+                      {/* Progress */}
+                      <div className="bg-gray-50 rounded-xl p-4">
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="text-sm text-gray-600">
+                            Progresso
+                          </span>
+                          <span className="text-sm font-medium">
+                            {passRate}% Pass Rate
+                          </span>
+                        </div>
+                        <div className="flex h-2 rounded-full overflow-hidden bg-gray-200">
+                          <div
+                            className="bg-green-500"
+                            style={{
+                              width: `${
+                                (passed / cycle.testCases.length) * 100
+                              }%`,
+                            }}
+                          />
+                          <div
+                            className="bg-red-500"
+                            style={{
+                              width: `${
+                                (failed / cycle.testCases.length) * 100
+                              }%`,
+                            }}
+                          />
+                        </div>
+                        <div className="flex items-center gap-4 mt-2">
+                          <span className="flex items-center gap-1 text-xs text-gray-500">
+                            <CheckCircle className="w-3 h-3 text-green-500" />{" "}
+                            {passed} passati
+                          </span>
+                          <span className="flex items-center gap-1 text-xs text-gray-500">
+                            <XCircle className="w-3 h-3 text-red-500" />{" "}
+                            {failed} falliti
+                          </span>
+                          <span className="flex items-center gap-1 text-xs text-gray-500">
+                            <Clock className="w-3 h-3 text-gray-400" />{" "}
+                            {pending} in attesa
+                          </span>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                );
+              })}
+            </div>
           )}
-
-          {/* Test Cycles Tab */}
-          {activeTab === "cycles" && (
-            <>
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="font-medium text-gray-700">Cicli di Test</h3>
-                <div className="flex items-center gap-2">
-                  {/* <Link href="/tests">
-                    <Button variant="secondary">
-                      <ExternalLink className="w-4 h-4" />
-                      Test Management
-                    </Button>
-                  </Link> */}
-                  <Button onClick={() => setShowNewCycleModal(true)}>
-                    <Plus className="w-4 h-4" />
-                    Nuovo Ciclo
-                  </Button>
-                </div>
-              </div>
-
-              {project.testCycles.length === 0 ? (
-                <EmptyState
-                  icon={Zap}
-                  title="Nessun ciclo di test"
-                  description="Crea un ciclo di test per eseguire i test cases."
-                  action={{
-                    label: "Crea Ciclo",
-                    onClick: () => setShowNewCycleModal(true),
-                  }}
-                />
-              ) : (
-                <div className="space-y-4">
-                  {project.testCycles.map((cycle) => {
-                    const passed = cycle.executions.filter(
-                      (e) => e.result === "passed"
-                    ).length;
-                    const failed = cycle.executions.filter(
-                      (e) => e.result === "failed"
-                    ).length;
-                    const pending =
-                      cycle.testCases.length - cycle.executions.length;
-                    const passRate =
-                      cycle.executions.length > 0
-                        ? Math.round((passed / cycle.executions.length) * 100)
-                        : 0;
-
-                    return (
-                      <Card key={cycle.id}>
-                        <CardContent className="py-4">
-                          <div className="flex items-start justify-between mb-4">
-                            <div>
-                              <div className="flex items-center gap-3 mb-2">
-                                <h3 className="font-bold text-gray-900">
-                                  {cycle.name}
-                                </h3>
-                                <Badge
-                                  variant={
-                                    cycle.status === "completed"
-                                      ? "success"
-                                      : cycle.status === "in-progress"
-                                      ? "warning"
-                                      : "default"
-                                  }
-                                >
-                                  {cycle.status === "completed"
-                                    ? "Completato"
-                                    : cycle.status === "in-progress"
-                                    ? "In Corso"
-                                    : "Pianificato"}
-                                </Badge>
-                              </div>
-                              <p className="text-sm text-gray-500">
-                                {cycle.description}
-                              </p>
-                              <div className="flex items-center gap-4 mt-2 text-xs text-gray-400">
-                                <span>Ambiente: {cycle.environment}</span>
-                                <span>Build: {cycle.build}</span>
-                              </div>
-                            </div>
-                            <Button
-                              variant="secondary"
-                              onClick={() => setSelectedCycle(cycle)}
-                            >
-                              <Play className="w-4 h-4" />
-                              Esegui Test
-                            </Button>
-                          </div>
-
-                          {/* Progress */}
-                          <div className="bg-gray-50 rounded-xl p-4">
-                            <div className="flex items-center justify-between mb-2">
-                              <span className="text-sm text-gray-600">
-                                Progresso
-                              </span>
-                              <span className="text-sm font-medium">
-                                {passRate}% Pass Rate
-                              </span>
-                            </div>
-                            <div className="flex h-2 rounded-full overflow-hidden bg-gray-200">
-                              <div
-                                className="bg-green-500"
-                                style={{
-                                  width: `${
-                                    (passed / cycle.testCases.length) * 100
-                                  }%`,
-                                }}
-                              />
-                              <div
-                                className="bg-red-500"
-                                style={{
-                                  width: `${
-                                    (failed / cycle.testCases.length) * 100
-                                  }%`,
-                                }}
-                              />
-                            </div>
-                            <div className="flex items-center gap-4 mt-2">
-                              <span className="flex items-center gap-1 text-xs text-gray-500">
-                                <CheckCircle className="w-3 h-3 text-green-500" />{" "}
-                                {passed} passati
-                              </span>
-                              <span className="flex items-center gap-1 text-xs text-gray-500">
-                                <XCircle className="w-3 h-3 text-red-500" />{" "}
-                                {failed} falliti
-                              </span>
-                              <span className="flex items-center gap-1 text-xs text-gray-500">
-                                <Clock className="w-3 h-3 text-gray-400" />{" "}
-                                {pending} in attesa
-                              </span>
-                            </div>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    );
-                  })}
-                </div>
-              )}
-            </>
-          )}
-        </main>
-      </div>
+        </>
+      )}
 
       {/* New Test Case Modal */}
       <Modal
@@ -1133,6 +1123,6 @@ export default function TestsPage() {
           </div>
         </div>
       </Modal>
-    </div>
+    </AppLayout>
   );
 }

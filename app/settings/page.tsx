@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Sidebar, Header } from "../components/layout/Navigation";
+import { AppLayout } from "../components/layout/AppLayout";
 import { useProjectStore } from "../store/projectStore";
 import { Card, CardHeader, CardContent } from "../components/ui/Card";
 import { Button } from "../components/ui/Button";
@@ -683,49 +683,44 @@ export default function SettingsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Sidebar />
-      <Header />
-
-      <main className="ml-64 pt-16 p-6">
-        <div className="max-w-5xl mx-auto">
-          {/* Page Header */}
-          <div className="mb-8">
-            <h1 className="text-2xl font-bold text-gray-900">Impostazioni</h1>
-            <p className="text-gray-500 mt-1">
-              Gestisci il tuo profilo, team e preferenze dell&apos;applicazione.
-            </p>
-          </div>
-
-          <div className="flex gap-8">
-            {/* Sidebar Tabs */}
-            <div className="w-56 flex-shrink-0">
-              <nav className="space-y-1">
-                {tabs.map((tab) => {
-                  const Icon = tab.icon;
-                  return (
-                    <button
-                      key={tab.id}
-                      onClick={() => setActiveTab(tab.id)}
-                      className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-left transition-colors ${
-                        activeTab === tab.id
-                          ? "bg-violet-100 text-violet-700"
-                          : "text-gray-600 hover:bg-gray-100"
-                      }`}
-                    >
-                      <Icon className="w-5 h-5" />
-                      <span className="font-medium">{tab.label}</span>
-                    </button>
-                  );
-                })}
-              </nav>
-            </div>
-
-            {/* Content */}
-            <div className="flex-1">{renderTabContent()}</div>
-          </div>
+    <AppLayout>
+      <div className="max-w-5xl mx-auto">
+        {/* Page Header */}
+        <div className="mb-8">
+          <h1 className="text-2xl font-bold text-gray-900">Impostazioni</h1>
+          <p className="text-gray-500 mt-1">
+            Gestisci il tuo profilo, team e preferenze dell&apos;applicazione.
+          </p>
         </div>
-      </main>
+
+        <div className="flex gap-8">
+          {/* Sidebar Tabs */}
+          <div className="w-56 flex-shrink-0">
+            <nav className="space-y-1">
+              {tabs.map((tab) => {
+                const Icon = tab.icon;
+                return (
+                  <button
+                    key={tab.id}
+                    onClick={() => setActiveTab(tab.id)}
+                    className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-left transition-colors ${
+                      activeTab === tab.id
+                        ? "bg-violet-100 text-violet-700"
+                        : "text-gray-600 hover:bg-gray-100"
+                    }`}
+                  >
+                    <Icon className="w-5 h-5" />
+                    <span className="font-medium">{tab.label}</span>
+                  </button>
+                );
+              })}
+            </nav>
+          </div>
+
+          {/* Content */}
+          <div className="flex-1">{renderTabContent()}</div>
+        </div>
+      </div>
 
       {/* Add/Edit Member Modal */}
       <Modal
@@ -797,6 +792,6 @@ export default function SettingsPage() {
           </div>
         </div>
       </Modal>
-    </div>
+    </AppLayout>
   );
 }

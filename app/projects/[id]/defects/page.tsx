@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
-import { Sidebar, Header } from "../../../components/layout/Navigation";
+import { AppLayout } from "../../../components/layout/AppLayout";
 import { useProjectStore } from "../../../store/projectStore";
 import { Card, CardHeader, CardContent } from "../../../components/ui/Card";
 import { Button } from "../../../components/ui/Button";
@@ -26,7 +26,6 @@ import {
   Edit,
   Trash2,
   Link as LinkIcon,
-  MessageSquare,
   ChevronRight,
   Filter,
   Search,
@@ -244,221 +243,208 @@ export default function DefectsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Sidebar />
-      <div className="ml-64">
-        <Header />
-        <main className="p-6">
-          {/* Breadcrumb */}
-          <div className="mb-6">
-            <Link
-              href={`/projects/${projectId}`}
-              className="inline-flex items-center gap-2 text-gray-500 hover:text-gray-700 mb-4"
-            >
-              <ArrowLeft className="w-4 h-4" />
-              Torna al progetto
-            </Link>
-            <div className="flex items-center justify-between">
-              <div>
-                <h1 className="text-2xl font-bold text-gray-900">
-                  Defects &amp; Bug
-                </h1>
-                <p className="text-gray-500 mt-1">
-                  {project.name} - Gestione anomalie
-                </p>
-              </div>
-              <div className="flex items-center gap-2">
-                {/* <Link href="/defects">
+    <AppLayout>
+      {/* Breadcrumb */}
+      <div className="mb-6">
+        <Link
+          href={`/projects/${projectId}`}
+          className="inline-flex items-center gap-2 text-gray-500 hover:text-gray-700 mb-4"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          Torna al progetto
+        </Link>
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">
+              Defects &amp; Bug
+            </h1>
+            <p className="text-gray-500 mt-1">
+              {project.name} - Gestione anomalie
+            </p>
+          </div>
+          <div className="flex items-center gap-2">
+            {/* <Link href="/defects">
                   <Button variant="secondary">
                     <ExternalLink className="w-4 h-4" />
                     Defects Management
                   </Button>
                 </Link> */}
-                <Button onClick={() => setShowNewDefectModal(true)}>
-                  <Plus className="w-4 h-4" />
-                  Segnala Bug
-                </Button>
-              </div>
-            </div>
+            <Button onClick={() => setShowNewDefectModal(true)}>
+              <Plus className="w-4 h-4" />
+              Segnala Bug
+            </Button>
           </div>
-
-          {/* Stats */}
-          <div className="grid grid-cols-5 gap-4 mb-6">
-            <Card>
-              <CardContent className="py-4 text-center">
-                <Bug className="w-8 h-8 mx-auto mb-2 text-gray-400" />
-                <p className="text-2xl font-bold text-gray-900">
-                  {stats.total}
-                </p>
-                <p className="text-sm text-gray-500">Totali</p>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardContent className="py-4 text-center">
-                <AlertCircle className="w-8 h-8 mx-auto mb-2 text-red-500" />
-                <p className="text-2xl font-bold text-red-600">{stats.open}</p>
-                <p className="text-sm text-gray-500">Aperti</p>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardContent className="py-4 text-center">
-                <Clock className="w-8 h-8 mx-auto mb-2 text-amber-500" />
-                <p className="text-2xl font-bold text-amber-600">
-                  {stats.inProgress}
-                </p>
-                <p className="text-sm text-gray-500">In Corso</p>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardContent className="py-4 text-center">
-                <CheckCircle className="w-8 h-8 mx-auto mb-2 text-green-500" />
-                <p className="text-2xl font-bold text-green-600">
-                  {stats.resolved}
-                </p>
-                <p className="text-sm text-gray-500">Risolti</p>
-              </CardContent>
-            </Card>
-            <Card
-              className={stats.critical > 0 ? "bg-red-50 border-red-200" : ""}
-            >
-              <CardContent className="py-4 text-center">
-                <AlertTriangle
-                  className={`w-8 h-8 mx-auto mb-2 ${
-                    stats.critical > 0 ? "text-red-600" : "text-gray-400"
-                  }`}
-                />
-                <p
-                  className={`text-2xl font-bold ${
-                    stats.critical > 0 ? "text-red-600" : "text-gray-900"
-                  }`}
-                >
-                  {stats.critical}
-                </p>
-                <p className="text-sm text-gray-500">Critici Aperti</p>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Filters */}
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-3">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                <input
-                  type="text"
-                  placeholder="Cerca defects..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-9 pr-4 py-2 rounded-lg border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500"
-                />
-              </div>
-              <select
-                value={filterStatus}
-                onChange={(e) => setFilterStatus(e.target.value)}
-                className="px-3 py-2 rounded-lg border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500"
-              >
-                <option value="all">Tutti gli stati</option>
-                <option value="open">Aperto</option>
-                <option value="in-progress">In Corso</option>
-                <option value="resolved">Risolto</option>
-                <option value="closed">Chiuso</option>
-                <option value="reopened">Riaperto</option>
-              </select>
-              <select
-                value={filterSeverity}
-                onChange={(e) => setFilterSeverity(e.target.value)}
-                className="px-3 py-2 rounded-lg border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500"
-              >
-                <option value="all">Tutte le severity</option>
-                <option value="critical">Critico</option>
-                <option value="high">Alto</option>
-                <option value="medium">Medio</option>
-                <option value="low">Basso</option>
-              </select>
-            </div>
-          </div>
-
-          {/* Defects List */}
-          {filteredDefects.length === 0 && project.defects.length === 0 ? (
-            <EmptyState
-              icon={Bug}
-              title="Nessun defect registrato"
-              description="Ottimo! Non ci sono bug segnalati per questo progetto."
-              action={{
-                label: "Segnala Bug",
-                onClick: () => setShowNewDefectModal(true),
-              }}
-            />
-          ) : filteredDefects.length === 0 ? (
-            <Card className="p-8 text-center">
-              <p className="text-gray-500">
-                Nessun defect corrisponde ai filtri selezionati
-              </p>
-            </Card>
-          ) : (
-            <div className="space-y-3">
-              {filteredDefects.map((defect) => (
-                <Card
-                  key={defect.id}
-                  hover
-                  className="cursor-pointer"
-                  onClick={() => setSelectedDefect(defect)}
-                >
-                  <CardContent className="py-4">
-                    <div className="flex items-start gap-4">
-                      <div className="flex-shrink-0 mt-1">
-                        {getSeverityIcon(defect.severity)}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 mb-1">
-                          <span className="font-mono text-sm text-red-600">
-                            {defect.code}
-                          </span>
-                          <h4 className="font-medium text-gray-900">
-                            {defect.title}
-                          </h4>
-                        </div>
-                        <p className="text-sm text-gray-500 line-clamp-1 mb-2">
-                          {defect.description}
-                        </p>
-                        <div className="flex items-center gap-2">
-                          <Badge
-                            variant={getSeverityColor(defect.severity)}
-                            size="sm"
-                          >
-                            {getSeverityLabel(defect.severity)}
-                          </Badge>
-                          <Badge
-                            variant={getStatusColor(defect.status)}
-                            size="sm"
-                          >
-                            {getStatusLabel(defect.status)}
-                          </Badge>
-                          {defect.assignedTo && (
-                            <div className="flex items-center gap-1 text-xs text-gray-500">
-                              <span>→</span>
-                              <Avatar name={defect.assignedTo.name} size="xs" />
-                              <span>{defect.assignedTo.name}</span>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-2 text-xs text-gray-400">
-                        <span>
-                          {format(new Date(defect.createdAt), "dd/MM/yy", {
-                            locale: it,
-                          })}
-                        </span>
-                        <ChevronRight className="w-4 h-4" />
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          )}
-        </main>
+        </div>
       </div>
+
+      {/* Stats */}
+      <div className="grid grid-cols-5 gap-4 mb-6">
+        <Card>
+          <CardContent className="py-4 text-center">
+            <Bug className="w-8 h-8 mx-auto mb-2 text-gray-400" />
+            <p className="text-2xl font-bold text-gray-900">{stats.total}</p>
+            <p className="text-sm text-gray-500">Totali</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="py-4 text-center">
+            <AlertCircle className="w-8 h-8 mx-auto mb-2 text-red-500" />
+            <p className="text-2xl font-bold text-red-600">{stats.open}</p>
+            <p className="text-sm text-gray-500">Aperti</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="py-4 text-center">
+            <Clock className="w-8 h-8 mx-auto mb-2 text-amber-500" />
+            <p className="text-2xl font-bold text-amber-600">
+              {stats.inProgress}
+            </p>
+            <p className="text-sm text-gray-500">In Corso</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="py-4 text-center">
+            <CheckCircle className="w-8 h-8 mx-auto mb-2 text-green-500" />
+            <p className="text-2xl font-bold text-green-600">
+              {stats.resolved}
+            </p>
+            <p className="text-sm text-gray-500">Risolti</p>
+          </CardContent>
+        </Card>
+        <Card className={stats.critical > 0 ? "bg-red-50 border-red-200" : ""}>
+          <CardContent className="py-4 text-center">
+            <AlertTriangle
+              className={`w-8 h-8 mx-auto mb-2 ${
+                stats.critical > 0 ? "text-red-600" : "text-gray-400"
+              }`}
+            />
+            <p
+              className={`text-2xl font-bold ${
+                stats.critical > 0 ? "text-red-600" : "text-gray-900"
+              }`}
+            >
+              {stats.critical}
+            </p>
+            <p className="text-sm text-gray-500">Critici Aperti</p>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Filters */}
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-3">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+            <input
+              type="text"
+              placeholder="Cerca defects..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-9 pr-4 py-2 rounded-lg border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500"
+            />
+          </div>
+          <select
+            value={filterStatus}
+            onChange={(e) => setFilterStatus(e.target.value)}
+            className="px-3 py-2 rounded-lg border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500"
+          >
+            <option value="all">Tutti gli stati</option>
+            <option value="open">Aperto</option>
+            <option value="in-progress">In Corso</option>
+            <option value="resolved">Risolto</option>
+            <option value="closed">Chiuso</option>
+            <option value="reopened">Riaperto</option>
+          </select>
+          <select
+            value={filterSeverity}
+            onChange={(e) => setFilterSeverity(e.target.value)}
+            className="px-3 py-2 rounded-lg border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500"
+          >
+            <option value="all">Tutte le severity</option>
+            <option value="critical">Critico</option>
+            <option value="high">Alto</option>
+            <option value="medium">Medio</option>
+            <option value="low">Basso</option>
+          </select>
+        </div>
+      </div>
+
+      {/* Defects List */}
+      {filteredDefects.length === 0 && project.defects.length === 0 ? (
+        <EmptyState
+          icon={Bug}
+          title="Nessun defect registrato"
+          description="Ottimo! Non ci sono bug segnalati per questo progetto."
+          action={{
+            label: "Segnala Bug",
+            onClick: () => setShowNewDefectModal(true),
+          }}
+        />
+      ) : filteredDefects.length === 0 ? (
+        <Card className="p-8 text-center">
+          <p className="text-gray-500">
+            Nessun defect corrisponde ai filtri selezionati
+          </p>
+        </Card>
+      ) : (
+        <div className="space-y-3">
+          {filteredDefects.map((defect) => (
+            <Card
+              key={defect.id}
+              hover
+              className="cursor-pointer"
+              onClick={() => setSelectedDefect(defect)}
+            >
+              <CardContent className="py-4">
+                <div className="flex items-start gap-4">
+                  <div className="flex-shrink-0 mt-1">
+                    {getSeverityIcon(defect.severity)}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="font-mono text-sm text-red-600">
+                        {defect.code}
+                      </span>
+                      <h4 className="font-medium text-gray-900">
+                        {defect.title}
+                      </h4>
+                    </div>
+                    <p className="text-sm text-gray-500 line-clamp-1 mb-2">
+                      {defect.description}
+                    </p>
+                    <div className="flex items-center gap-2">
+                      <Badge
+                        variant={getSeverityColor(defect.severity)}
+                        size="sm"
+                      >
+                        {getSeverityLabel(defect.severity)}
+                      </Badge>
+                      <Badge variant={getStatusColor(defect.status)} size="sm">
+                        {getStatusLabel(defect.status)}
+                      </Badge>
+                      {defect.assignedTo && (
+                        <div className="flex items-center gap-1 text-xs text-gray-500">
+                          <span>→</span>
+                          <Avatar name={defect.assignedTo.name} size="xs" />
+                          <span>{defect.assignedTo.name}</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2 text-xs text-gray-400">
+                    <span>
+                      {format(new Date(defect.createdAt), "dd/MM/yy", {
+                        locale: it,
+                      })}
+                    </span>
+                    <ChevronRight className="w-4 h-4" />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
 
       {/* New Defect Modal */}
       <Modal
@@ -780,6 +766,6 @@ export default function DefectsPage() {
           </div>
         )}
       </Modal>
-    </div>
+    </AppLayout>
   );
 }

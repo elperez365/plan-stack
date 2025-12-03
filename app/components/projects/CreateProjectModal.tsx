@@ -17,7 +17,6 @@ import {
   Check,
   Plus,
   Users,
-  Calendar,
   Link as LinkIcon,
 } from "lucide-react";
 

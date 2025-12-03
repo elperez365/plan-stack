@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
-import { Sidebar, Header } from "../../../components/layout/Navigation";
+import { AppLayout } from "../../../components/layout/AppLayout";
 import { useProjectStore } from "../../../store/projectStore";
 import { Card, CardHeader, CardContent } from "../../../components/ui/Card";
 import { Button } from "../../../components/ui/Button";
@@ -27,7 +27,6 @@ import {
   AlertCircle,
   Edit,
   Trash2,
-  MessageSquare,
   Link as LinkIcon,
   History,
   Filter,
@@ -234,283 +233,273 @@ export default function RequirementsPage() {
     : { total: 0, approved: 0, implemented: 0, mustHave: 0 };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Sidebar />
-      <div className="ml-64">
-        <Header />
-        <main className="p-6">
-          {/* Breadcrumb */}
-          <div className="mb-6">
-            <Link
-              href={`/projects/${projectId}`}
-              className="inline-flex items-center gap-2 text-gray-500 hover:text-gray-700 mb-4"
-            >
-              <ArrowLeft className="w-4 h-4" />
-              Torna al progetto
-            </Link>
-            <div className="flex items-center justify-between">
-              <div>
-                <h1 className="text-2xl font-bold text-gray-900">
-                  Analisi Funzionali
-                </h1>
-                <p className="text-gray-500 mt-1">
-                  {project.name} - Documentazione requisiti
-                </p>
-              </div>
-              <div className="flex items-center gap-2">
-                {/* <Link href="/requirements">
+    <AppLayout>
+      {/* Breadcrumb */}
+      <div className="mb-6">
+        <Link
+          href={`/projects/${projectId}`}
+          className="inline-flex items-center gap-2 text-gray-500 hover:text-gray-700 mb-4"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          Torna al progetto
+        </Link>
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">
+              Analisi Funzionali
+            </h1>
+            <p className="text-gray-500 mt-1">
+              {project.name} - Documentazione requisiti
+            </p>
+          </div>
+          <div className="flex items-center gap-2">
+            {/* <Link href="/requirements">
                   <Button variant="secondary">
                     <ExternalLink className="w-4 h-4" />
                     Requisiti Management
                   </Button>
                 </Link> */}
-                <Button onClick={() => setShowNewAnalysisModal(true)}>
-                  <Plus className="w-4 h-4" />
-                  Nuova Analisi
-                </Button>
+            <Button onClick={() => setShowNewAnalysisModal(true)}>
+              <Plus className="w-4 h-4" />
+              Nuova Analisi
+            </Button>
+          </div>
+        </div>
+      </div>
+
+      {project.functionalAnalyses.length === 0 ? (
+        <EmptyState
+          icon={FileText}
+          title="Nessuna analisi funzionale"
+          description="Crea la prima analisi per documentare i requisiti del progetto in modo strutturato."
+          action={{
+            label: "Crea Analisi",
+            onClick: () => setShowNewAnalysisModal(true),
+          }}
+        />
+      ) : (
+        <div className="grid grid-cols-12 gap-6">
+          {/* Sidebar Analyses */}
+          <div className="col-span-3">
+            <Card>
+              <CardHeader className="py-3">
+                <h3 className="font-medium text-gray-700">Documenti</h3>
+              </CardHeader>
+              <div className="divide-y divide-gray-100">
+                {project.functionalAnalyses.map((analysis) => (
+                  <button
+                    key={analysis.id}
+                    onClick={() => setSelectedAnalysisId(analysis.id)}
+                    className={`w-full p-4 text-left hover:bg-gray-50 transition-colors ${
+                      selectedAnalysis?.id === analysis.id
+                        ? "bg-violet-50 border-l-2 border-violet-600"
+                        : ""
+                    }`}
+                  >
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="font-medium text-gray-900 text-sm">
+                        {analysis.title}
+                      </span>
+                      <Badge
+                        variant={
+                          analysis.status === "approved"
+                            ? "success"
+                            : analysis.status === "review"
+                            ? "warning"
+                            : "default"
+                        }
+                        size="sm"
+                      >
+                        v{analysis.version}
+                      </Badge>
+                    </div>
+                    <p className="text-xs text-gray-500">
+                      {analysis.requirements.length} requisiti
+                    </p>
+                  </button>
+                ))}
               </div>
-            </div>
+            </Card>
           </div>
 
-          {project.functionalAnalyses.length === 0 ? (
-            <EmptyState
-              icon={FileText}
-              title="Nessuna analisi funzionale"
-              description="Crea la prima analisi per documentare i requisiti del progetto in modo strutturato."
-              action={{
-                label: "Crea Analisi",
-                onClick: () => setShowNewAnalysisModal(true),
-              }}
-            />
-          ) : (
-            <div className="grid grid-cols-12 gap-6">
-              {/* Sidebar Analyses */}
-              <div className="col-span-3">
-                <Card>
-                  <CardHeader className="py-3">
-                    <h3 className="font-medium text-gray-700">Documenti</h3>
-                  </CardHeader>
-                  <div className="divide-y divide-gray-100">
-                    {project.functionalAnalyses.map((analysis) => (
-                      <button
-                        key={analysis.id}
-                        onClick={() => setSelectedAnalysisId(analysis.id)}
-                        className={`w-full p-4 text-left hover:bg-gray-50 transition-colors ${
-                          selectedAnalysis?.id === analysis.id
-                            ? "bg-violet-50 border-l-2 border-violet-600"
-                            : ""
-                        }`}
-                      >
-                        <div className="flex items-center justify-between mb-1">
-                          <span className="font-medium text-gray-900 text-sm">
-                            {analysis.title}
-                          </span>
+          {/* Main Content */}
+          <div className="col-span-9">
+            {selectedAnalysis && (
+              <>
+                {/* Analysis Header */}
+                <Card className="mb-6">
+                  <CardContent className="py-4">
+                    <div className="flex items-start justify-between mb-4">
+                      <div>
+                        <div className="flex items-center gap-3 mb-2">
+                          <h2 className="text-xl font-bold text-gray-900">
+                            {selectedAnalysis.title}
+                          </h2>
                           <Badge
                             variant={
-                              analysis.status === "approved"
+                              selectedAnalysis.status === "approved"
                                 ? "success"
-                                : analysis.status === "review"
+                                : selectedAnalysis.status === "review"
                                 ? "warning"
                                 : "default"
                             }
-                            size="sm"
                           >
-                            v{analysis.version}
+                            {selectedAnalysis.status === "approved"
+                              ? "Approvato"
+                              : selectedAnalysis.status === "review"
+                              ? "In Review"
+                              : "Bozza"}
                           </Badge>
                         </div>
-                        <p className="text-xs text-gray-500">
-                          {analysis.requirements.length} requisiti
+                        <p className="text-gray-500">
+                          {selectedAnalysis.description}
                         </p>
-                      </button>
-                    ))}
-                  </div>
-                </Card>
-              </div>
-
-              {/* Main Content */}
-              <div className="col-span-9">
-                {selectedAnalysis && (
-                  <>
-                    {/* Analysis Header */}
-                    <Card className="mb-6">
-                      <CardContent className="py-4">
-                        <div className="flex items-start justify-between mb-4">
-                          <div>
-                            <div className="flex items-center gap-3 mb-2">
-                              <h2 className="text-xl font-bold text-gray-900">
-                                {selectedAnalysis.title}
-                              </h2>
-                              <Badge
-                                variant={
-                                  selectedAnalysis.status === "approved"
-                                    ? "success"
-                                    : selectedAnalysis.status === "review"
-                                    ? "warning"
-                                    : "default"
-                                }
-                              >
-                                {selectedAnalysis.status === "approved"
-                                  ? "Approvato"
-                                  : selectedAnalysis.status === "review"
-                                  ? "In Review"
-                                  : "Bozza"}
-                              </Badge>
-                            </div>
-                            <p className="text-gray-500">
-                              {selectedAnalysis.description}
-                            </p>
-                          </div>
-                          <div className="flex gap-2">
-                            <Button variant="ghost" size="sm">
-                              <Download className="w-4 h-4" />
-                              Esporta
-                            </Button>
-                            <Button variant="secondary" size="sm">
-                              <Edit className="w-4 h-4" />
-                              Modifica
-                            </Button>
-                          </div>
-                        </div>
-
-                        {/* Stats */}
-                        <div className="grid grid-cols-4 gap-4">
-                          <div className="text-center p-3 bg-gray-50 rounded-xl">
-                            <p className="text-2xl font-bold text-gray-900">
-                              {stats.total}
-                            </p>
-                            <p className="text-xs text-gray-500">Totali</p>
-                          </div>
-                          <div className="text-center p-3 bg-green-50 rounded-xl">
-                            <p className="text-2xl font-bold text-green-600">
-                              {stats.approved}
-                            </p>
-                            <p className="text-xs text-gray-500">Approvati</p>
-                          </div>
-                          <div className="text-center p-3 bg-blue-50 rounded-xl">
-                            <p className="text-2xl font-bold text-blue-600">
-                              {stats.implemented}
-                            </p>
-                            <p className="text-xs text-gray-500">
-                              Implementati
-                            </p>
-                          </div>
-                          <div className="text-center p-3 bg-red-50 rounded-xl">
-                            <p className="text-2xl font-bold text-red-600">
-                              {stats.mustHave}
-                            </p>
-                            <p className="text-xs text-gray-500">Must Have</p>
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-
-                    {/* Filters & Actions */}
-                    <div className="flex items-center justify-between mb-4">
-                      <div className="flex items-center gap-3">
-                        <div className="relative">
-                          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                          <input
-                            type="text"
-                            placeholder="Cerca requisiti..."
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                            className="pl-9 pr-4 py-2 rounded-lg border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500"
-                          />
-                        </div>
-                        <select
-                          value={filterStatus}
-                          onChange={(e) => setFilterStatus(e.target.value)}
-                          className="px-3 py-2 rounded-lg border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500"
-                        >
-                          <option value="all">Tutti gli stati</option>
-                          <option value="draft">Bozza</option>
-                          <option value="review">In Review</option>
-                          <option value="approved">Approvato</option>
-                          <option value="implemented">Implementato</option>
-                        </select>
-                        <select
-                          value={filterPriority}
-                          onChange={(e) => setFilterPriority(e.target.value)}
-                          className="px-3 py-2 rounded-lg border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500"
-                        >
-                          <option value="all">Tutte le priorità</option>
-                          <option value="must-have">Must Have</option>
-                          <option value="should-have">Should Have</option>
-                          <option value="could-have">Could Have</option>
-                          <option value="wont-have">Won&apos;t Have</option>
-                        </select>
                       </div>
-                      <Button onClick={() => setShowNewRequirementModal(true)}>
-                        <Plus className="w-4 h-4" />
-                        Nuovo Requisito
-                      </Button>
+                      <div className="flex gap-2">
+                        <Button variant="ghost" size="sm">
+                          <Download className="w-4 h-4" />
+                          Esporta
+                        </Button>
+                        <Button variant="secondary" size="sm">
+                          <Edit className="w-4 h-4" />
+                          Modifica
+                        </Button>
+                      </div>
                     </div>
 
-                    {/* Requirements List */}
-                    <div className="space-y-3">
-                      {filteredRequirements.length === 0 ? (
-                        <Card className="p-8 text-center">
-                          <p className="text-gray-500">
-                            Nessun requisito trovato
-                          </p>
-                        </Card>
-                      ) : (
-                        filteredRequirements.map((req) => (
-                          <Card
-                            key={req.id}
-                            hover
-                            className="cursor-pointer"
-                            onClick={() => setSelectedRequirement(req)}
-                          >
-                            <CardContent className="py-4">
-                              <div className="flex items-start gap-4">
-                                <div className="flex-shrink-0 mt-1">
-                                  {getStatusIcon(req.status)}
-                                </div>
-                                <div className="flex-1 min-w-0">
-                                  <div className="flex items-center gap-2 mb-1">
-                                    <span className="font-mono text-sm text-violet-600">
-                                      {req.code}
-                                    </span>
-                                    <h4 className="font-medium text-gray-900">
-                                      {req.title}
-                                    </h4>
-                                  </div>
-                                  <p className="text-sm text-gray-500 line-clamp-2 mb-3">
-                                    {req.description}
-                                  </p>
-                                  <div className="flex items-center gap-2">
-                                    <Badge
-                                      variant={getPriorityColor(req.priority)}
-                                      size="sm"
-                                    >
-                                      {getPriorityLabel(req.priority)}
-                                    </Badge>
-                                    <Badge size="sm">{req.type}</Badge>
-                                    {req.acceptanceCriteria.length > 0 && (
-                                      <span className="text-xs text-gray-400">
-                                        {req.acceptanceCriteria.length} criteri
-                                      </span>
-                                    )}
-                                  </div>
-                                </div>
-                                <div className="flex items-center gap-2">
-                                  <Avatar name={req.author.name} size="sm" />
-                                  <ChevronRight className="w-4 h-4 text-gray-300" />
-                                </div>
-                              </div>
-                            </CardContent>
-                          </Card>
-                        ))
-                      )}
+                    {/* Stats */}
+                    <div className="grid grid-cols-4 gap-4">
+                      <div className="text-center p-3 bg-gray-50 rounded-xl">
+                        <p className="text-2xl font-bold text-gray-900">
+                          {stats.total}
+                        </p>
+                        <p className="text-xs text-gray-500">Totali</p>
+                      </div>
+                      <div className="text-center p-3 bg-green-50 rounded-xl">
+                        <p className="text-2xl font-bold text-green-600">
+                          {stats.approved}
+                        </p>
+                        <p className="text-xs text-gray-500">Approvati</p>
+                      </div>
+                      <div className="text-center p-3 bg-blue-50 rounded-xl">
+                        <p className="text-2xl font-bold text-blue-600">
+                          {stats.implemented}
+                        </p>
+                        <p className="text-xs text-gray-500">Implementati</p>
+                      </div>
+                      <div className="text-center p-3 bg-red-50 rounded-xl">
+                        <p className="text-2xl font-bold text-red-600">
+                          {stats.mustHave}
+                        </p>
+                        <p className="text-xs text-gray-500">Must Have</p>
+                      </div>
                     </div>
-                  </>
-                )}
-              </div>
-            </div>
-          )}
-        </main>
-      </div>
+                  </CardContent>
+                </Card>
+
+                {/* Filters & Actions */}
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-3">
+                    <div className="relative">
+                      <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                      <input
+                        type="text"
+                        placeholder="Cerca requisiti..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="pl-9 pr-4 py-2 rounded-lg border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500"
+                      />
+                    </div>
+                    <select
+                      value={filterStatus}
+                      onChange={(e) => setFilterStatus(e.target.value)}
+                      className="px-3 py-2 rounded-lg border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500"
+                    >
+                      <option value="all">Tutti gli stati</option>
+                      <option value="draft">Bozza</option>
+                      <option value="review">In Review</option>
+                      <option value="approved">Approvato</option>
+                      <option value="implemented">Implementato</option>
+                    </select>
+                    <select
+                      value={filterPriority}
+                      onChange={(e) => setFilterPriority(e.target.value)}
+                      className="px-3 py-2 rounded-lg border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500"
+                    >
+                      <option value="all">Tutte le priorità</option>
+                      <option value="must-have">Must Have</option>
+                      <option value="should-have">Should Have</option>
+                      <option value="could-have">Could Have</option>
+                      <option value="wont-have">Won&apos;t Have</option>
+                    </select>
+                  </div>
+                  <Button onClick={() => setShowNewRequirementModal(true)}>
+                    <Plus className="w-4 h-4" />
+                    Nuovo Requisito
+                  </Button>
+                </div>
+
+                {/* Requirements List */}
+                <div className="space-y-3">
+                  {filteredRequirements.length === 0 ? (
+                    <Card className="p-8 text-center">
+                      <p className="text-gray-500">Nessun requisito trovato</p>
+                    </Card>
+                  ) : (
+                    filteredRequirements.map((req) => (
+                      <Card
+                        key={req.id}
+                        hover
+                        className="cursor-pointer"
+                        onClick={() => setSelectedRequirement(req)}
+                      >
+                        <CardContent className="py-4">
+                          <div className="flex items-start gap-4">
+                            <div className="flex-shrink-0 mt-1">
+                              {getStatusIcon(req.status)}
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-2 mb-1">
+                                <span className="font-mono text-sm text-violet-600">
+                                  {req.code}
+                                </span>
+                                <h4 className="font-medium text-gray-900">
+                                  {req.title}
+                                </h4>
+                              </div>
+                              <p className="text-sm text-gray-500 line-clamp-2 mb-3">
+                                {req.description}
+                              </p>
+                              <div className="flex items-center gap-2">
+                                <Badge
+                                  variant={getPriorityColor(req.priority)}
+                                  size="sm"
+                                >
+                                  {getPriorityLabel(req.priority)}
+                                </Badge>
+                                <Badge size="sm">{req.type}</Badge>
+                                {req.acceptanceCriteria.length > 0 && (
+                                  <span className="text-xs text-gray-400">
+                                    {req.acceptanceCriteria.length} criteri
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <Avatar name={req.author.name} size="sm" />
+                              <ChevronRight className="w-4 h-4 text-gray-300" />
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))
+                  )}
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* New Analysis Modal */}
       <Modal
@@ -803,6 +792,6 @@ export default function RequirementsPage() {
           </div>
         )}
       </Modal>
-    </div>
+    </AppLayout>
   );
 }
